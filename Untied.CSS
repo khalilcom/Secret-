@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>I Love You</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      /* Background set to black to match the video style */
+      background-color: #000; 
+      position: relative;
+    }
+
+    .content {
+      position: relative;
+      z-index: 10; /* Ensure text stays above hearts */
+      width: 100%;
+      padding: 0 20px;
+      text-align: center;
+      pointer-events: none; /* Allows clicks to pass through to background if needed */
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 6vw, 2.2rem);
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.4;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      color: #cccccc;
+    }
+
+    /* The Heart Container */
+    .heart {
+      position: absolute;
+      bottom: -100px;
+      /* We use a CSS heart shape instead of an image */
+      background-color: currentColor;
+      display: inline-block;
+      height: 30px;
+      margin: 0 10px;
+      transform: rotate(-45deg);
+      width: 30px;
+      z-index: 1;
+      filter: drop-shadow(0 0 10px currentColor); /* Glowing effect */
+    }
+
+    .heart:before,
+    .heart:after {
+      content: "";
+      background-color: inherit;
+      border-radius: 50%;
+      height: 30px;
+      position: absolute;
+      width: 30px;
+    }
+
+    .heart:before {
+      top: -15px;
+      left: 0;
+    }
+
+    .heart:after {
+      left: 15px;
+      top: 0;
+    }
+
+    /* Rising and Swaying Animation */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(-45deg) scale(0.5);
+        opacity: 0;
+      }
+      10% {
+        opacity: var(--target-opacity);
+      }
+      90% {
+        opacity: var(--target-opacity);
+      }
+      100% {
+        transform: translateY(-120vh) rotate(-45deg) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes sideSway {
+      0%, 100% { margin-left: 0px; }
+      50% { margin-left: 50px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content">
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+  </div>
+
+  <script>
+    /* =========================
+       CUSTOMIZATION
+       ========================= */
+    const TITLE_TEXT = "the longer I'm with you";
+    const SUBTITLE_TEXT = "the more I love you";
+    
+    // Heart colors inspired by the video (Pink, Rose, Deep Red)
+    const COLORS = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#c9184a', '#a4133c'];
+    /* ========================= */
+
+    const titleEl = document.getElementById("title");
+    const subtitleEl = document.getElementById("subtitle");
+
+    let i = 0, j = 0;
+
+    // Start typing effect
+    typeTitle();
+    // Start generating hearts frequently to match the video density
+    setInterval(createHeart, 150); 
+
+    function typeTitle() {
+      if (i < TITLE_TEXT.length) {
+        titleEl.textContent += TITLE_TEXT.charAt(i++);
+        setTimeout(typeTitle, 100);
+      } else {
+        setTimeout(typeSubtitle, 500);
+      }
+    }
+
+    function typeSubtitle() {
+      if (j < SUBTITLE_TEXT.length) {
+        subtitleEl.textContent += SUBTITLE_TEXT.charAt(j++);
+        setTimeout(typeSubtitle, 80);
+      }
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      
+      // Randomize visual properties
+      const size = Math.random() * 20 + 15; // 15px to 35px
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const opacity = Math.random() * 0.5 + 0.3; // 30% to 80% visibility
+      const duration = Math.random() * 3 + 4; // 4s to 7s travel time
+      
+      // Apply styles
+      heart.style.width = `${size}px`;
+      heart.style.height = `${size}px`;
+      heart.style.color = color;
+      heart.style.setProperty('--target-opacity', opacity);
+      heart.style.left = Math.random() * 100 + "vw";
+      
+      // Heart shape adjustment for pseudo-elements
+      heart.style.setProperty('--size', `${size}px`);
+      
+      // Animations
+      heart.style.animation = `floatUp ${duration}s linear forwards, sideSway ${Math.random() * 2 + 2}s ease-in-out infinite`;
+
+      document.body.appendChild(heart);
+
+      // Cleanup
+      setTimeout(() => heart.remove(), duration * 1000);
+    }
+  </script>
+
+</body>
+</html>
